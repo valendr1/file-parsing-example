@@ -1,5 +1,6 @@
 import com.codeborne.pdftest.PDF;
 import com.codeborne.pdftest.matchers.ContainsExactText;
+import com.codeborne.xlstest.XLS;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
@@ -24,13 +25,29 @@ public class FileParsingTest {
     }
 
     @Test
-    void pdfFromZipParsingTest() throws Exception{
+    void pdfFromZipParsingTest() throws Exception {
         while ((zipEntry = zipInputStream.getNextEntry()) != null) {
             if (zipEntry.getName().equals("sample.pdf")) {
                 InputStream inputStreamPdf = zf.getInputStream(zipEntry);
                 PDF pdf = new PDF(inputStreamPdf);
                 Assertions.assertEquals(2, pdf.numberOfPages);
                 assertThat(pdf, new ContainsExactText("The end, and just as well"));
+            }
+        }
+    }
+
+    @Test
+    void xlsFromZipParsingTest() throws Exception {
+        while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+            if (zipEntry.getName().equals("file_example_XLS_10.xls")) {
+                InputStream inputStreamXls = zf.getInputStream(zipEntry);
+                XLS xls = new XLS(inputStreamXls);
+                String cellValue = String.valueOf(xls.excel
+                        .getSheetAt(0)
+                        .getRow(7)
+                        .getCell(5)
+                        .getNumericCellValue());
+                org.assertj.core.api.Assertions.assertThat(cellValue).contains("56");
             }
         }
     }
