@@ -1,11 +1,15 @@
 import com.codeborne.pdftest.PDF;
 import com.codeborne.pdftest.matchers.ContainsExactText;
 import com.codeborne.xlstest.XLS;
+import com.opencsv.CSVReader;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
@@ -52,5 +56,25 @@ public class FileParsingTest {
         }
     }
 
+    @Test
+    void csvFromZipParsingTest() throws Exception {
+        while ((zipEntry = zipInputStream.getNextEntry()) != null) {
+            if (zipEntry.getName().equals("addresses.csv")) {
+                try (InputStream inputStreamCsv = zf.getInputStream(zipEntry)){
+                    CSVReader csvReader = new CSVReader(new InputStreamReader(inputStreamCsv, StandardCharsets.UTF_8));
+                    List<String[]> r = csvReader.readAll();
+                    org.assertj.core.api.Assertions.assertThat(r).contains(
+                            new String[] {
+                                    "John", "Doe", "120 jefferson st.", "Riverside", " NJ", " 08075"
+                            },
+                            new String[] {
+                                    "", "Blankman", "", "SomeTown", " SD", " 00298"
+                            }
+                    );
+                    csvReader.close();
+                }
+            }
+        }
+    }
 }
 
