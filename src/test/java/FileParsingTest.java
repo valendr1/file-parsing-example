@@ -23,8 +23,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class FileParsingTest {
 
     ClassLoader cl = FileParsingTest.class.getClassLoader();
-    ZipFile zf = new ZipFile(new File("C:/Users/WS06/IdeaProjects/FileParcingExample/" +
-            "src/test/resources/example-zip.zip"));
+    ZipFile zf = new ZipFile(new File("src/test/resources/example-zip.zip"));
     ZipInputStream zipInputStream = new ZipInputStream(cl.getResourceAsStream("example-zip.zip"));
     ZipEntry zipEntry;
     String pdfName = "sample.pdf";
